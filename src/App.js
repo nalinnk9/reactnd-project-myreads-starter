@@ -1,65 +1,65 @@
 import  { connect } from 'react-redux';
-import React from 'react'
-// import * as BooksAPI from './BooksAPI'
+import React from 'react';
 import './App.css';
-import BookList from './components/BookList';
-
-import {addBookToList, deleteBookFromList, addAllBooks} from './redux/actions/actions';
+import {addBookToList, addAllBooks, searchBooks} from './redux/actions/actions';
+import {Route} from 'react-router';
+import SearchBar from './components/search-bar';
+import MainPage from './components/MainPage';
 
 class BooksApp extends React.Component {
 
 removeFromOldList = (list, nList, book) => {
-  this.props.deleteBook(list, book);
   this.props.addBook(nList, book);
+  this.forceUpdate();
 
 }
-getIndex = (list) => {
-  switch(list) {
-    case '0' :
-      return 0;
-    case '1' :
-      return 1;
-    case '2' : 
-    return 2;
-    case '3' : 
-    return 3;
-    default :
-    return 0;
-  }
-}
+
 handleOnChange = (event, book) => {
-    const currList = book.list;
+    const currList = book.shelf;
     const newList = event.target.value;
-    this.removeFromOldList(currList, this.getIndex(newList), book);
+    this.removeFromOldList(currList, newList, book);
+}
+handleInput = (e) => {
+  console.log("value of input is ", e.target.value);
+  this.props.searchBooks();
+} 
+
+componentDidMount = () => {
+   this.props.addAllBooks();
+}
+shouldComponentUpdate = (nextProps) => {
+  if(this.props.testBooks.length !== nextProps.testBooks.length) {
+    return true;
+  }
+  for(let i = 0; i < this.props.testBooks.length ; i++) {
+      if(this.props.testBooks[i].shelf !== nextProps.testBooks[i].shelf) {
+        console.log("books is", this.props.testBooks[i]);
+        return true;
+      }
+  }
+  return false;
+}
+renderMainPage = () => {
+  return (
+    <MainPage
+    testBooks = {this.props.testBooks}
+    handleOnChange = {this.handleOnChange}
+    
+    />
+  )
 }
 
+renderSearchPage = () => {
+  return (
+     <SearchBar books = {this.props.testBooks}
+     handleInput = {this.handleInput}/>
+  );
+}
   render() {
     return (
-      <div className="app">
-        
-          <div className="list-books">
-            <div className="list-books-title">
-              <h1>MyReads</h1>
-            </div>
-            <BookList 
-            title= "Currently Reading"
-            list = {this.props.testBooks[0]}
-            handleChange = {this.handleOnChange}
-            />
-            <BookList 
-            title="Want to Read"
-            list = {this.props.testBooks[1]}
-            handleChange = {this.handleOnChange}
-            />
-            <BookList 
-            title="Already Read"
-            list = {this.props.testBooks[2]}
-            handleChange = {this.handleOnChange}
-            />
-          </div>
-          <div className="open-search">
-              <button onClick={() => this.setState({ showSearchPage: true })}>Add a book</button>
-            </div>
+      <div>
+      <Route exact path = "/" render= {() => this.renderMainPage()}/>
+      <Route exact path = "/search" render = {() => this.renderSearchPage()}/>
       </div>
     );
   }
@@ -70,18 +70,20 @@ const mapDispatchToProps = dispatch => {
   addBook : (book, list) => {
     dispatch(addBookToList(book, list));
   },
-  deleteBook : (book, list) => {
-    dispatch(deleteBookFromList(book, list))
-  },
   addAllBooks: () => {
     dispatch(addAllBooks());
+  },
+  searchBooks: () => {
+    dispatch(searchBooks());
   }
+
 }
 }
 
 const mapStateToProps = state => {
   return {
-  testBooks : state
+  testBooks : state.books,
+  isFetching : state.isFetching
   }
 }
 export const Books = connect(mapStateToProps, mapDispatchToProps)(BooksApp);

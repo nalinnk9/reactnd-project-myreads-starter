@@ -8,14 +8,14 @@ export default class Book extends PureComponent<any, any> {
         return (
             <div className="book">
                 <div className="book-top">
-                    <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${this.props.book.bookURl})` }}></div>
+                    <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${this.props.book.imageLinks.thumbnail})` }}></div>
                         <div className="book-shelf-changer">
-                            <select id = "select" onChange = {(event) => this.props.handleChange(event)}> 
+                            <select id = "select" onChange = {(event) => this.props.handleChange(event)} defaultValue = {this.props.book.shelf}> 
                                 <option value="move" disabled>Move to...</option>
-                                <option value="0" >Currently Reading</option>
-                                <option value="1">Want to Read</option>
-                                <option value="2" > Read</option>
-                                <option value="3" >None</option>
+                                <option value="currentlyReading">Currently Reading</option>
+                                <option value="wantToRead">Want to Read</option>
+                                <option value="read" > Read</option>
+                                <option value="none" >None</option>
                             </select>
                         </div>
                     </div>

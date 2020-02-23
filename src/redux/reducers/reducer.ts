@@ -1,64 +1,34 @@
-const currentlyReading = [
-    {
-        bookURl: "http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api",
-        bookTitle:  "To Kill a Mockingbird",
-        bookAuthor : "Harper Lee",
-        list: 0
-    },
-    {
-        bookURl: "http://books.google.com/books/content?id=yDtCuFHXbAYC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72RRiTR6U5OUg3IY_LpHTL2NztVWAuZYNFE8dUuC0VlYabeyegLzpAnDPeWxE6RHi0C2ehrR9Gv20LH2dtjpbcUcs8YnH5VCCAH0Y2ICaKOTvrZTCObQbsfp4UbDqQyGISCZfGN&source=gbs_api",
-        bookTitle: "Ender's Game",
-        bookAuthor : "Orson Scott Card",
-        list: 0
-    }];
-  const  wantToRead = [
-    {
-        bookURl:"http://books.google.com/books/content?id=uu1mC6zWNTwC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73pGHfBNSsJG9Y8kRBpmLUft9O4BfItHioHolWNKOdLavw-SLcXADy3CPAfJ0_qMb18RmCa7Ds1cTdpM3dxAGJs8zfCfm8c6ggBIjzKT7XR5FIB53HHOhnsT7a0Cc-PpneWq9zX&source=gbs_api",
-        bookTitle : "E1776",
-        bookAuthor : "David McCullough",
-        list: 1
-    },
-    {
-        bookURl: "http://books.google.com/books/content?id=wrOQLV6xB-wC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72G3gA5A-Ka8XjOZGDFLAoUeMQBqZ9y-LCspZ2dzJTugcOcJ4C7FP0tDA8s1h9f480ISXuvYhA_ZpdvRArUL-mZyD4WW7CHyEqHYq9D3kGnrZCNiqxSRhry8TiFDCMWP61ujflB&source=gbs_api",
-        bookTitle:  "Harry Potter and the Sorcerer's Stone",
-        bookAuthor: "J.K. Rowling",
-        list: 1
-    }
-];
-const read = [
-    {
-        bookURl : "http://books.google.com/books/content?id=pD6arNyKyi8C&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE70Rw0CCwNZh0SsYpQTkMbvz23npqWeUoJvVbi_gXla2m2ie_ReMWPl0xoU8Quy9fk0Zhb3szmwe8cTe4k7DAbfQ45FEzr9T7Lk0XhVpEPBvwUAztOBJ6Y0QPZylo4VbB7K5iRSk&source=gbs_api",
-        bookTitle : "The Hobbit",
-        bookAuthor : "J.R.R. Tolkien",
-        list: 2
-    },
-    {
-        bookURl : "http://books.google.com/books/content?id=1q_xAwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE712CA0cBYP8VKbEcIVEuFJRdX1k30rjLM29Y-dw_qU1urEZ2cQ42La3Jkw6KmzMmXIoLTr50SWTpw6VOGq1leINsnTdLc_S5a5sn9Hao2t5YT7Ax1RqtQDiPNHIyXP46Rrw3aL8&source=gbs_api",
-        bookTitle: "Oh, the Places You'll Go!",
-        bookAuthor : "Seuss",
-        list: 2
-    },
-    {
-        bookURl:"http://books.google.com/books/content?id=32haAAAAMAAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72yckZ5f5bDFVIf7BGPbjA0KYYtlQ__nWB-hI_YZmZ-fScYwFy4O_fWOcPwf-pgv3pPQNJP_sT5J_xOUciD8WaKmevh1rUR-1jk7g1aCD_KeJaOpjVu0cm_11BBIUXdxbFkVMdi&source=gbs_api",
-        bookTitle : "The Adventures of Tom Sawyer",
-        bookAuthor : "Mark Twain",
-        list: 2
-    }
-];
-const none = [{}];
 
-export const defaultState = [currentlyReading, wantToRead, read, none];
-export const reducer = (state:any , action:any)  => {
+export const reducer = (state = {
+    isFetching: false,
+    books: [{
+      id:"",
+      shelf: ""
+    }]
+} , action:any)  => {
     switch(action.type) {
-        case 'ADD_BOOK_TO_LIST': 
-          const tmpState = Object.assign({},state);
-          tmpState[action.list].push(action.book);
-          action.book.list = action.list;
+        case 'SET_FETCHING':
+            return {
+                isFetching: true,
+                books: []
+            }
+        case 'INITIALIZE_BOOKS':
+            return {
+                isFetching: false,
+                books: action.books
+            }
+        case 'ADD_BOOK_TO_LIST':
+            const tmpState = Object.assign({}, state);
+            tmpState.books.map((book) => {
+                if(book.id === action.book.id) {
+                    book.shelf = action.list;
+                }
+            });
           return tmpState;
-        case 'DELETE_BOOK_FROM_LIST': 
-           const nState = Object.assign({},state);
-           nState[action.list] = nState[action.list].filter((book: any) => book.bookTitle !== action.book.bookTitle);
-           return nState;
+        case 'SEARCH_BOOK' :
+            const nState = Object.assign({}, state);
+            nState.books = action.books ? action.books : [];
+            return nState;
         default : 
         return state;
     }

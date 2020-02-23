@@ -3,37 +3,19 @@ import { Books }  from './App'
 import './index.css'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
-import { createStore } from 'redux'
-import {reducer, defaultState } from './redux/reducers/reducer';
+import { createStore, applyMiddleware } from 'redux'
+import {reducer } from './redux/reducers/reducer';
+import { middleware } from './redux/middlewares/middleware';
+import {Router} from 'react-router';
+import { createHashHistory } from 'history';
 
-
-function saveToLocalStorage(state) {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem('state', serializedState);
-  } catch (e) {
-    console.log(e);
-  }
-}
-function getFromLocalStorage() {
-  try {
-    const state = localStorage.getItem('state');
-    if(state === null) {
-      return JSON.parse(defaultState);
-    }
-    return JSON.parse(state);
-  }
-  catch(e) {
-    return JSON.parse(defaultState);
-  }
-}
-const persistedState = getFromLocalStorage();
-const store = createStore(reducer,persistedState);
+const browserHistory = createHashHistory();
+const store = createStore(reducer, applyMiddleware(middleware));
 render(
+  <Router history = {browserHistory}>
     <Provider store={store}>
       <Books />
-    </Provider>,
+    </Provider>
+    </Router>,
     document.getElementById('root')
   )
-
-  store.subscribe(() => saveToLocalStorage(store.getState()));

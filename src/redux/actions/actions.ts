@@ -5,16 +5,15 @@ export const addBookToList = (list:any, book: any) => {
        book
    }
 }
-
-export const deleteBookFromList = (list : any, book: any) => {
-    return {
-        type: "DELETE_BOOK_FROM_LIST",
-        list, 
-        book
-    }
-}
 export const addAllBooks = () => {
     return {
-        type: "INITIALIZE_BOOKS"
+        type: "INITIALIZE_BOOKS",
+        books: []
+    }
+}
+export const searchBooks = () => {
+    return {
+        type : "SEARCH_BOOK",
+        books: []
     }
 }
