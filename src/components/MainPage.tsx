@@ -4,9 +4,11 @@ import {Link} from 'react-router-dom';
 
 export default class MainPage extends Component<any, any> {
         render() {
-            const booksReading = this.props.testBooks ? this.props.testBooks.filter((book:any) => book.shelf === "currentlyReading"): [];
-    const booksRead = this.props.testBooks ? this.props.testBooks.filter((book:any) => book.shelf === "read"): [];
-    const booksWantToRead = this.props.testBooks ? this.props.testBooks.filter((book:any) => book.shelf === "wantToRead"): [];
+          const non = this.props.testBooks ? 
+          this.props.testBooks.filter((book:any) => book.shelf !== "currentlyReading" && book.shelf !== "read" && book.shelf !== "wantToRead"):null; 
+          const booksReading = this.props.testBooks ? this.props.testBooks.filter((book:any) => book.shelf === "currentlyReading"): null;
+    const booksRead = this.props.testBooks ? this.props.testBooks.filter((book:any) => book.shelf === "read"): null;
+    const booksWantToRead = this.props.testBooks ? this.props.testBooks.filter((book:any) => book.shelf === "wantToRead"): null;
         return !this.props.isFetching ? (
             <div className="app">
               
@@ -14,21 +16,33 @@ export default class MainPage extends Component<any, any> {
                   <div className="list-books-title">
                     <h1>MyReads</h1>
                   </div>
+                  {booksReading && (
                   <BookList 
                   title= "Currently Reading"
                   list = {booksReading}
                   handleChange = {this.props.handleOnChange}
                   />
+                  )}
+                  { booksRead && (
                   <BookList 
                   title="Want to Read"
                   list = {booksWantToRead}
                   handleChange = {this.props.handleOnChange}
                   />
+                  )}
+                  {booksWantToRead && (
                   <BookList 
                   title="Already Read"
                   list = {booksRead}
                   handleChange = {this.props.handleOnChange}
                   />
+                  )}
+                  {non && ( <BookList
+                  title="none"
+                  list={non}
+                  handleChange = {this.props.handleOnChange}
+                  />
+                  )}
                 </div>
                 <div className="open-search">
             <Link to = '/search' >Add a book</Link>

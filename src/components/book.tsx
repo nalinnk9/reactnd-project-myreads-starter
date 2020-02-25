@@ -1,16 +1,13 @@
 import React, { PureComponent } from 'react'
 
 export default class Book extends PureComponent<any, any> {
-
-    
-
     render() {
         return (
             <div className="book">
                 <div className="book-top">
                     <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${this.props.book.imageLinks.thumbnail})` }}></div>
                         <div className="book-shelf-changer">
-                            <select id = "select" onChange = {(event) => this.props.handleChange(event)} defaultValue = {this.props.book.shelf}> 
+                            <select id = "select" onChange = {(event) => this.props.handleChange(event)} defaultValue = {this.props.book.shelf ? this.props.book.shelf : "none"}> 
                                 <option value="move" disabled>Move to...</option>
                                 <option value="currentlyReading">Currently Reading</option>
                                 <option value="wantToRead">Want to Read</option>

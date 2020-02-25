@@ -1,17 +1,12 @@
 
 export const reducer = (state = {
-    isFetching: false,
+    isFetching: true,
     books: [{
       id:"",
       shelf: ""
     }]
 } , action:any)  => {
     switch(action.type) {
-        case 'SET_FETCHING':
-            return {
-                isFetching: true,
-                books: []
-            }
         case 'INITIALIZE_BOOKS':
             return {
                 isFetching: false,
@@ -24,10 +19,12 @@ export const reducer = (state = {
                     book.shelf = action.list;
                 }
             });
+            tmpState.isFetching = false;
           return tmpState;
         case 'SEARCH_BOOK' :
             const nState = Object.assign({}, state);
-            nState.books = action.books ? action.books : [];
+            nState.isFetching = false;
+            nState.books = action.books ? action.books : [{}];
             return nState;
         default : 
         return state;
