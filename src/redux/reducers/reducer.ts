@@ -4,9 +4,20 @@ export const reducer = (state = {
     books: [{
       id:"",
       shelf: ""
-    }]
+    }],
+    query: ""
 } , action:any)  => {
     switch(action.type) {
+        case 'SET_FETCHING' :
+            return {
+                ...state,
+                isFetching: action.value
+            }
+            case 'SET_QUERY' :
+            return {
+                ...state,
+                query: action.value
+            }
         case 'INITIALIZE_BOOKS':
             return {
                 isFetching: false,
@@ -25,6 +36,7 @@ export const reducer = (state = {
             const nState = Object.assign({}, state);
             nState.isFetching = false;
             nState.books = action.books ? action.books : [{}];
+            nState.query = action.query;
             return nState;
         default : 
         return state;

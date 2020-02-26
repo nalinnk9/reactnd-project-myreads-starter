@@ -1,13 +1,18 @@
 import  { connect } from 'react-redux';
 import React from 'react';
 import './App.css';
-import {addBookToListAPI, addAllBooksAPI, searchBooksAPI} from './redux/actions/actions';
+import {addBookToListAPI, addAllBooksAPI, searchBooksAPI, setQuery} from './redux/actions/actions';
 import {Route} from 'react-router';
 import SearchBar from './components/search-bar';
 import MainPage from './components/MainPage';
-
+import { ReactComponent as Logo } from './images/loading.svg';
 class BooksApp extends React.Component {
-
+constructor (props) {
+  super(props);
+  this.state = {
+    books: []
+  }
+}
 removeFromOldList = (list, nList, book) => {
   this.props.addBook(nList, book);
   this.forceUpdate();
@@ -19,25 +24,24 @@ handleOnChange = (event, book) => {
     this.removeFromOldList(currList, newList, book);
 }
 handleInput = (e) => {
+  if(e.key === "Enter") {
   e.target.value.length > 0 ? this.props.searchBooks(e.target.value)
   : this.props.addAllBooks();
-  this.forceUpdate();
+  }
 } 
 
 componentDidMount = () => {
    this.props.addAllBooks();
 }
-// shouldComponentUpdate = (nextProps) => {
-//   if(this.props.testBooks.length !== nextProps.testBooks.length) {
-//     return true;
-//   }
-//   for(let i = 0; i < this.props.testBooks.length ; i++) {
-//       if(this.props.testBooks[i].shelf !== nextProps.testBooks[i].shelf) {
-//         return true;
-//       }
-//   }
-//   return false;
-// }
+shouldComponentUpdate = (nextProps) => {
+  if(this.props.isFetching !== nextProps.isFetching || this.props.query !== nextProps.query) {
+    return true;
+  }
+  if(this.props.testBooks.length !== nextProps.testBooks.length) {
+    return true;
+  }
+  return false;
+}
 renderMainPage = () => {
   return (
     !this.props.isFetching ? (
@@ -45,7 +49,7 @@ renderMainPage = () => {
     testBooks = {this.props.testBooks}
     handleOnChange = {this.handleOnChange}
     />
-    ) : <div> Loading </div>
+    ) : <Logo/>
   )
 }
 
@@ -56,8 +60,10 @@ renderSearchPage = () => {
      handleInput = {this.handleInput}
      handleOnChange = {this.handleOnChange}
      addAllBooks={this.props.addAllBooks}
+     query={this.props.query}
+     handleOnChangeInput={(e) => this.props.setQuery(e)}
      />
-    ) : <div> Loading </div>
+    ) : <Logo/>
   );
 }
   render() {
@@ -80,6 +86,9 @@ const mapDispatchToProps = dispatch => {
   },
   searchBooks: (query) => {
     dispatch(searchBooksAPI(query));
+  },
+  setQuery : (query) => {
+    dispatch(setQuery(query));
   }
 
 }
@@ -88,7 +97,8 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return {
   testBooks : state.books,
-  isFetching : state.isFetching
+  isFetching : state.isFetching,
+  query : state.query
   }
 }
 export const Books = connect(mapStateToProps, mapDispatchToProps)(BooksApp);

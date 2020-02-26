@@ -5,9 +5,9 @@ export default class BookList extends Component{
     
     render() {
         const bookList = this.props.list.map((book, i) =>           
-            <li>
+            <li key = {`${book.url}`+i}>
                 <Book
-                key= {i}
+                key= {`${book.url}`+i}
                 handleChange = {(event) => this.props.handleChange(event, book)}
                 book= {book}
                 />
